@@ -28,4 +28,4 @@ Public to private num of hops
 DNS queries from the private instance
 -------------------
 DNS request of DNS root server couldn't resolve port 53 is blocked in the privater ec2 instance
-the dig command encountered issues trying to resolve the nameservers 3 times until there was a timeout
+the dig command encountered issues trying to resolve the nameservers 3 times until there was a timeout.
