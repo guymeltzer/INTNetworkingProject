@@ -1,26 +1,31 @@
 Local DNS Server IP
 -------------------
-<ip-here>
+10.0.0.1
 
 
 
 Default gateway IP
 -------------------
-<ip-here>
+127.0.0.53
 
 
 
 DHCP IP allocation sys-logs
 -------------------
-<logs-here>
+2024-07-30T16:49:14.597228+00:00 ip-10-0-0-199 dhcpcd[453]: ens5: soliciting a DHCP lease
+2024-07-30T16:49:14.597232+00:00 ip-10-0-0-199 dhcpcd[453]: ens5: offered 10.0.0.199 from 10.0.0.1
+2024-07-30T16:49:14.597237+00:00 ip-10-0-0-199 dhcpcd[453]: ens5: leased 10.0.0.199 for 3600 seconds
+2024-07-30T16:49:14.597241+00:00 ip-10-0-0-199 dhcpcd[453]: ens5: adding route to 10.0.0.0/24
+2024-07-30T16:49:14.597246+00:00 ip-10-0-0-199 dhcpcd[453]: ens5: adding default route via 10.0.0.1
 
 
 
 Public to private num of hops
 -------------------
-<answer-here>
+1 hop once you update the security group for the private ec2 to accept custom UDP Port 33434 (traceroute)
 
 
 DNS queries from the private instance
 -------------------
-<answer-here>
+DNS request of DNS root server couldn't resolve port 53 is blocked in the privater ec2 instance
+the dig command encountered issues trying to resolve the nameservers 3 times until there was a timeout
