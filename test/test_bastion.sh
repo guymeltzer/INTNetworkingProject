@@ -6,7 +6,7 @@ echo "Command: 'ssh -i ./private_key ubuntu@"$PUBLIC_IP"'"
 echo -e "-----------------------------------------------------------------------------------------------------------------"
 
 
-OUTPUT=$(ssh -i ./private_key ubuntu@$PUBLIC_IP 'echo $SSH_CONNECTION')
+OUTPUT=$(ssh -i /private_key ubuntu@$PUBLIC_IP 'echo $SSH_CONNECTION')
 if [ $? -ne "0" ]
 then
   echo "$OUTPUT"
