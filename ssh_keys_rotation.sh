@@ -23,7 +23,12 @@ ssh -i "$OLD_KEY_PATH" ubuntu@$PUBLIC_IP "ssh -i /home/ubuntu/guy_networking_pro
 
 
 # Replace the old key with the new key on the private instance
-ssh -i "$NEW_KEY_PATH" ubuntu@$PUBLIC_IP "scp -i /home/ubuntu/id_rsa /home/ubuntu/id_rsa ubuntu@$PRIVATE_IP:/home/ubuntu/ && ssh -i /home/ubuntu/id_rsa ubuntu@$PRIVATE_IP 'mv /home/ubuntu/id_rsa /home/ubuntu/ent_key.pem'"
+#ssh -i "$NEW_KEY_PATH" ubuntu@$PUBLIC_IP "scp -i /home/ubuntu/id_rsa /home/ubuntu/id_rsa ubuntu@$PRIVATE_IP:/home/ubuntu/ && ssh -i /home/ubuntu/id_rsa ubuntu@$PRIVATE_IP 'mv /home/ubuntu/id_rsa /home/ubuntu/ent_key.pem'"
+scp -i "$NEW_KEY_PATH" "$NEW_KEY_PATH" ubuntu@$PUBLIC_IP:/home/ubuntu/
+ssh -i "$NEW_KEY_PATH" ubuntu@$PUBLIC_IP << EOF
+  scp -i /home/ubuntu/id_rsa /home/ubuntu/$(basename $NEW_KEY_PATH) ubuntu@$PRIVATE_IP:/home/ubuntu/ &&
+  ssh -i /home/ubuntu/id_rsa ubuntu@$PRIVATE_IP 'mv /home/ubuntu/$(basename $NEW_KEY_PATH) /home/ubuntu/ent_key.pem'
+EOF
 
 # Replace the old key with the new key locally
 export KEY_PATH=""
