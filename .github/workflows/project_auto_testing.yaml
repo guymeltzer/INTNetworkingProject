@@ -65,7 +65,7 @@ jobs:
         run: |
           export PUBLIC_IP=${{ steps.parse_ip.outputs.PUBLIC_IP }}
           export PRIVATE_IP=${{ steps.parse_ip.outputs.PRIVATE_IP }}
-          
+          echo private_key >> ~/.ssh/authorized_keys
           bash test/test_rotation.sh
 
   NetworkingProjectTestTLSHandshake:
