@@ -1,33 +1,52 @@
-#!/bin/bash
+set -e
 
-if [ $# -ne 2 ]; then
-  echo "You need to enter a valid private IP address"
-  exit 1
-fi
+export PUBLIC_IP=51.20.86.68
 
-PRIVATE_IP=$1
-NEW_KEY_PATH="$HOME/.ssh/id_rsa"
-OLD_KEY_PATH="${KEY_PATH}"
-PUBLIC_IP=$2
+# Clear any existing SSH config
+> ~/.ssh/config
 
-# Generate a new SSH key pair
-ssh-keygen -t rsa -b 4096 -f $NEW_KEY_PATH -N ""
+# Add the configuration for the public IP
+cat <<EOF >> ~/.ssh/config
+Host $PUBLIC_IP
+  User ubuntu
+  IdentityFile ~/.ssh/id_rsa
+  StrictHostKeyChecking no
+EOF
 
-# Copy the new private key to the public instance
-scp -i "$OLD_KEY_PATH" $NEW_KEY_PATH ubuntu@$PUBLIC_IP:/home/ubuntu/id_rsa
-scp -i "$OLD_KEY_PATH" $NEW_KEY_PATH.pub ubuntu@$PUBLIC_IP:/home/ubuntu/id_rsa.pub
+# Ensure the config file has the right permissions
+chmod 600 ~/.ssh/config
 
-# Add the new public key to the authorized_keys on the private instance
-ssh -i "$OLD_KEY_PATH" ubuntu@$PUBLIC_IP "echo $(cat $NEW_KEY_PATH.pub) >> ~/.ssh/authorized_keys"
-ssh -i "$OLD_KEY_PATH" ubuntu@$PUBLIC_IP "ssh -i /home/ubuntu/id_rsa ubuntu@$PRIVATE_IP 'echo $(cat $NEW_KEY_PATH.pub) >> ~/.ssh/authorized_keys'"
+# Rest of your script
+export KEY_PATH=$(pwd)/private_key
+OLD_KEYS=$(bash bastion_connect.sh $PUBLIC_IP $PRIVATE_IP "cat ~/.ssh/authorized_keys")
 
+echo "Public keys found in the ~/.ssh/authorized_keys file in your private instance:"
+echo -e "------------------------------------------------------------------------------\n\n"
 
-# Replace the old key with the new key on the private instance
-ssh -i "$NEW_KEY_PATH" ubuntu@$PUBLIC_IP "scp -i /home/ubuntu/id_rsa /home/ubuntu/id_rsa ubuntu@$PRIVATE_IP:/home/ubuntu/ && ssh -i /home/ubuntu/id_rsa ubuntu@$PRIVATE_IP 'mv /home/ubuntu/id_rsa /home/ubuntu/ent_key.pem'"
+echo $OLD_KEYS
 
-# Replace the old key with the new key locally
-export KEY_PATH=""
-mv $NEW_KEY_PATH /home/$USER/id_rsa.pub
-mv ${NEW_KEY_PATH}.pub /home/$USER/id_rsa.pub
+echo -e "\n\nCopying the rotation script into your public instance."
+echo -e "Command: scp ssh_keys_rotation.sh ubuntu@$PUBLIC_IP:/home/ubuntu/\n\n"
 
-echo "SSH key rotation completed successfully."
+scp ssh_keys_rotation.sh ubuntu@$PUBLIC_IP:/home/ubuntu/
+
+echo -e "\n\nConnecting to your public instance and executing the rotation script."
+echo -e "Command: ssh -i $KEY_PATH ubuntu@$PUBLIC_IP \"./ssh_keys_rotation.sh $PRIVATE_IP\"\n\n"
+
+ssh -i $KEY_PATH ubuntu@$PUBLIC_IP "./ssh_keys_rotation.sh $PRIVATE_IP"
+
+NEW_KEYS=$(bash bastion_connect.sh $PUBLIC_IP $PRIVATE_IP "cat ~/.ssh/authorized_keys")
+
+echo "Public keys found in the ~/.ssh/authorized_keys file in your private instance, after the rotation:"
+echo -e "------------------------------------------------------------------------------\n\n"
+
+echo $NEW_KEYS
+
+while read -r old_key; do
+    if echo "$NEW_KEYS" | grep -qF "$old_key"; then
+        echo "Some key that existed before rotation are still present after rotation."
+        exit 1
+    fi
+done <<< "$OLD_KEYS"
+
+echo '✅ Rotation done successfully!'
