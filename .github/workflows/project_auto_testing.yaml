@@ -18,7 +18,7 @@ jobs:
           repository: guymeltzer/INTNetworkingProject
           path: INTNetworkingProject
       - name: Copy test files
-        run: mv -f NetworkingProjectOriginal/test/* test/
+        run: mv -f INTNetworkingProject/test/* test/
       - name: Parse instances IP address
         id: parse_ip
         run: |
