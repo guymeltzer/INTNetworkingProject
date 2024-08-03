@@ -15,10 +15,10 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/checkout@v2
         with:
-          repository: guymeltzer/INTNetworkingProject
-          path: INTNetworkingProject
+          repository: exit-zero-academy/NetworkingProject
+          path: NetworkingProjectOriginal
       - name: Copy test files
-        run: mv -f INTNetworkingProject/test/* test/
+        run: mv -f NetworkingProjectOriginal/test/* test/
       - name: Parse instances IP address
         id: parse_ip
         run: |
