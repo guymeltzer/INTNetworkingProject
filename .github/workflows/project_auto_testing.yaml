@@ -17,6 +17,7 @@ jobs:
         with:
           repository: exit-zero-academy/NetworkingProject
           path: NetworkingProjectOriginal
+          ssh-private-key: ${{ secrets.PUBLIC_INSTANCE_SSH_KEY }}
       - name: Copy test files
         run: mv -f NetworkingProjectOriginal/test/* test/
       - name: Parse instances IP address
