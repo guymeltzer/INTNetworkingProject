@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #KEY_PATH=/home/omer/omerNetworkingPTJkeypair.pem
-KEY_PATH_2=/home/.ssh/github_test_ssh_key
+KEY_PATH_2=/home/ubuntu/.ssh/github_test_ssh_key
 
 # Check if KEY_PATH environment variable is set
 if [ -z "$KEY_PATH" ]; then
@@ -43,4 +43,3 @@ else
     ssh -t -i "$KEY_PATH" ubuntu@"$BASTION_IP" "ssh -i $KEY_PATH_2 ubuntu@$PRIVATE_IP '$COMMAND'"
   fi
 fi
-#
