@@ -24,7 +24,7 @@ if [ $? -ne 0 ]; then
   echo "Failed to connect to the private instance using the new key."
   exit 1
 fi
-#
+
 # Remove the old key from authorized_keys on the private instance
 ssh -i "$NEW_KEY_PATH" ubuntu@$PRIVATE_IP "grep -v '$(cat $OLD_KEY_PATH.pub)' ~/.ssh/authorized_keys > ~/.ssh/authorized_keys.tmp && mv ~/.ssh/authorized_keys.tmp ~/.ssh/authorized_keys"
 
