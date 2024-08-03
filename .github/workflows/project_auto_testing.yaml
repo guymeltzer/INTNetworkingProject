@@ -17,7 +17,6 @@ jobs:
         with:
           repository: exit-zero-academy/NetworkingProject
           path: NetworkingProjectOriginal
-          ssh-private-key: ${{ secrets.PUBLIC_INSTANCE_SSH_KEY }}
       - name: Copy test files
         run: mv -f NetworkingProjectOriginal/test/* test/
       - name: Parse instances IP address
@@ -66,7 +65,9 @@ jobs:
         run: |
           export PUBLIC_IP=${{ steps.parse_ip.outputs.PUBLIC_IP }}
           export PRIVATE_IP=${{ steps.parse_ip.outputs.PRIVATE_IP }}
-          
+          uses: actions/setup-ssh@v2
+            with:
+              ssh-private-key: ${{ secrets.PUBLIC_INSTANCE_SSH_KEY }}
           bash test/test_rotation.sh
 
   NetworkingProjectTestTLSHandshake:
