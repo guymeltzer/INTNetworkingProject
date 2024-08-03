@@ -65,10 +65,7 @@ jobs:
         run: |
           export PUBLIC_IP=${{ steps.parse_ip.outputs.PUBLIC_IP }}
           export PRIVATE_IP=${{ steps.parse_ip.outputs.PRIVATE_IP }}
-          echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
           bash test/test_rotation.sh
-          chmod 600 ~/.ssh/id_rsa
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
 
   NetworkingProjectTestTLSHandshake:
     runs-on: ubuntu-latest
