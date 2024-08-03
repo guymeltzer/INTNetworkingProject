@@ -44,8 +44,4 @@ else
   fi
 fi
 
-cat $KEY_PATH >> ~/.ssh/authorized_keys
-echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-chmod 600 ~/.ssh/id_rsa
-
 #
