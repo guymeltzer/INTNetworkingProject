@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#KEY_PATH=/home/omer/omerNetworkingPTJkeypair.pem
 KEY_PATH_2=/home/ubuntu/github_test_ssh_key
 
 # Check if KEY_PATH environment variable is set
