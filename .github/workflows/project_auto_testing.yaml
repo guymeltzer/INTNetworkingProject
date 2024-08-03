@@ -66,7 +66,7 @@ jobs:
           export PUBLIC_IP=${{ steps.parse_ip.outputs.PUBLIC_IP }}
           export PRIVATE_IP=${{ steps.parse_ip.outputs.PRIVATE_IP }}
           
-          bash test/test_rotation.sh
+          bash -x test/test_rotation.sh
 
   NetworkingProjectTestTLSHandshake:
     runs-on: ubuntu-latest
