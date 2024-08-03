@@ -15,8 +15,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/checkout@v2
         with:
-          repository: exit-zero-academy/NetworkingProject
-          path: NetworkingProjectOriginal
+          repository: guymeltzer/INTNetworkingProject
+          path: INTNetworkingProject
       - name: Copy test files
         run: mv -f NetworkingProjectOriginal/test/* test/
       - name: Parse instances IP address
