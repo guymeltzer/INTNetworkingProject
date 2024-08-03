@@ -67,7 +67,9 @@ jobs:
             chmod 400 ~/.ssh/id_rsa
             
             # Create SSH config file
-            echo -e "Host $PUBLIC_IP\n\tUser ubuntu\n\tIdentityFile ~/.ssh/id_rsa\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            echo "" > ~/.ssh/config
+            echo -e "Host $PUBLIC_IP\n\tUser ubuntu\n\tIdentityFile ~/.ssh/id_rsa\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+            chmod 600 ~/.ssh/config
             
             # Add private key for the private instance to the ssh config
             echo -e "Host $PRIVATE_IP\n\tUser ubuntu\n\tIdentityFile /home/ubuntu/.ssh/id_rsa\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
