@@ -23,43 +23,43 @@ CLIENT_HELLO_RESPONSE=$(curl -s -X POST http://$SERVER_IP:8080/clienthello     -
         "message": "Client Hello"
     }')
 
-    if [ $? -ne 0 ]; then
-        echo "Failed to send Client Hello"
-        exit 1
-    fi
+if [ $? -ne 0 ]; then
+  echo "Failed to send Client Hello"
+  exit 1
+fi
 
-    echo "Client Hello sent successfully"
-    echo "Response: $CLIENT_HELLO_RESPONSE"
+echo "Client Hello sent successfully"
+echo "Response: $CLIENT_HELLO_RESPONSE"
 
-        # Parse the JSON response to extract sessionID and serverCert
-    SESSION_ID=$(echo $CLIENT_HELLO_RESPONSE | jq -r '.sessionID')
-    SERVER_CERT=$(echo $CLIENT_HELLO_RESPONSE | jq -r '.serverCert')
+# Parse the JSON response to extract sessionID and serverCert
+SESSION_ID=$(echo $CLIENT_HELLO_RESPONSE | jq -r '.sessionID')
+SERVER_CERT=$(echo $CLIENT_HELLO_RESPONSE | jq -r '.serverCert')
 
-    if [ -z "$SESSION_ID" ] || [ -z "$SERVER_CERT" ]; then
-        echo "Failed to parse sessionID or serverCert from response"
-        exit 1
-    fi
+if [ -z "$SESSION_ID" ] || [ -z "$SERVER_CERT" ]; then
+  echo "Failed to parse sessionID or serverCert from response"
+  exit 1
+fi
 
-    echo "Session ID: $SESSION_ID"
-    echo "Server Certificate: $SERVER_CERT"
-    echo "$SERVER_CERT" > server_cert.pem
-    echo "Server certificate saved to server_cert.pem"
-    echo "Downloading CA certificate..."
-    wget https://exit-zero-academy.github.io/DevOpsTheHardWayAssets/networking_project/cert-ca-aws.pem
+echo "Session ID: $SESSION_ID"
+echo "Server Certificate: $SERVER_CERT"
+echo "$SERVER_CERT" > server_cert.pem
+echo "Server certificate saved to server_cert.pem"
+echo "Downloading CA certificate..."
+wget https://exit-zero-academy.github.io/DevOpsTheHardWayAssets/networking_project/cert-ca-aws.pem
 
-    if [ ! -f cert-ca-aws.pem ]; then
-      echo "Failed to download CA certificate."
-      exit 1
-    fi
+if [ ! -f cert-ca-aws.pem ]; then
+  echo "Failed to download CA certificate."
+  exit 1
+fi
 
-    openssl verify -CAfile cert-ca-aws.pem server_cert.pem > /dev/null 2>&1
+openssl verify -CAfile cert-ca-aws.pem server_cert.pem > /dev/null 2>&1
 
-    if [ $? -eq 0 ]; then
-      echo "cert.pem: OK"
-    else
-      echo "Server Certificate is invalid."
-      exit 5
-    fi
+if [ $? -eq 0 ]; then
+  echo "cert.pem: OK"
+else
+  echo "Server Certificate is invalid."
+  exit 5
+fi
 
 
 # Define the output file for the master key
@@ -76,6 +76,8 @@ if [ ! -f "$MASTER_KEY_FILE" ]; then
     echo "Failed to generate master key."
     exit 1
 fi
+cat "" >> $ENCRYPTED_KEY_FILE
+cat "" >> $ENCRYPTED_KEY_BASE64_FILE
 
 echo "Master key generated and saved to $MASTER_KEY_FILE"
 
