@@ -1,13 +1,20 @@
 #!/bin/bash
 
+
 if [ -z "$1" ]; then
     echo "You need to enter a valid IP address"
     exit 1
 fi
 
 SERVER_IP=$1
+#ssh -i ~/.ssh/id_rsa ubuntu@SERVER_IP
+#cd tls_webserver
+#python3 -m venv venv
+#source venv/bin/activate
+#pip install aiohttp==3.9.3
+#python3 app.py
 echo "Sending Client Hello to $SERVER_IP..."
-CLIENT_HELLO_RESPONSE=$(curl -s -X POST http://16.16.213.104:8080/clienthello     -H "Content-Type: application/json"     -d '{
+CLIENT_HELLO_RESPONSE=$(curl -s -X POST http://$SERVER_IP:8080/clienthello     -H "Content-Type: application/json"     -d '{
         "version": "1.3",
         "ciphersSuites": [
             "TLS_AES_128_GCM_SHA256",
@@ -80,11 +87,17 @@ EOF
 
     # Encrypt the master key
     openssl smime -encrypt -aes-256-cbc -in master_key.txt -outform DER server_cert.pem | base64 -w 0 > encrypted_key.txt
-    MASTER_KEY=$(cat encrypted_key.txt)
+    if [ $? -ne 0 ]; then
+      echo "Failed to encrypt master key."
+      exit 1
+    fi
+    MASTER_KEY=$(cat $MASTER_KEY_FILE)
     # Send the key exchange request
 curl -s -X POST http://$SERVER_IP:8080/keyexchange \
      -H "Content-Type: application/json" \
      -d @keyexchange.json
+
+
 
 # Check for errors
 if [ $? -ne 0 ]; then
