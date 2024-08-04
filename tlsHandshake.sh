@@ -65,13 +65,7 @@ CLIENT_HELLO_RESPONSE=$(curl -s -X POST http://$SERVER_IP:8080/clienthello     -
     # Define the output file for the master key
     MASTER_KEY_FILE="master_key.txt"
     # Create JSON file for key exchange
-    cat <<EOF > keyexchange.json
-{
-    "sessionID": "$SESSION_ID",
-    "masterKey": "$MASTER_KEY",
-    "sampleMessage": "Hi server, please encrypt me and send to client!"
-}
-EOF
+
 
     # Generate 32 random bytes and encode them in base64
     echo "Generating 32-byte master key..."
@@ -91,7 +85,14 @@ EOF
       echo "Failed to encrypt master key."
       exit 1
     fi
-    MASTER_KEY=$(cat $MASTER_KEY_FILE)
+    MASTER_KEY=$(cat $MASTER_KEY)
+    cat <<EOF > keyexchange.json
+{
+    "sessionID": "$SESSION_ID",
+    "masterKey": "$MASTER_KEY",
+    "sampleMessage": "Hi server, please encrypt me and send to client!"
+}
+EOF
     # Send the key exchange request
 curl -s -X POST http://$SERVER_IP:8080/keyexchange \
      -H "Content-Type: application/json" \
