@@ -62,34 +62,36 @@ CLIENT_HELLO_RESPONSE=$(curl -s -X POST http://$SERVER_IP:8080/clienthello     -
     fi
 
 
-   MASTER_KEY_FILE="master_key.txt"
-   ENCRYPTED_KEY_FILE="encrypted_key.txt"
-   ENCRYPTED_KEY_BASE64_FILE="encrypted_key_base64.txt"
-   KEY_EXCHANGE_JSON="keyexchange.json"
+# Define the output file for the master key
+MASTER_KEY_FILE="master_key.txt"
+ENCRYPTED_KEY_FILE="encrypted_key.txt"
+ENCRYPTED_KEY_BASE64_FILE="encrypted_key_base64.txt"
+KEY_EXCHANGE_JSON="keyexchange.json"
 
-   # Generate 32 random bytes and encode them in base64
-   echo "Generating 32-byte master key..."
-   openssl rand -base64 32 > "$MASTER_KEY_FILE"
+# Generate 32 random bytes and encode them in base64
+echo "Generating 32-byte master key..."
+openssl rand -base64 32 > "$MASTER_KEY_FILE"
 
-   # Check if the master key was generated and saved successfully
-   if [ ! -f "$MASTER_KEY_FILE" ]; then
-     echo "Failed to generate master key."
-     exit 1
-   fi
-   echo "Master key generated and saved to $MASTER_KEY_FILE"
+if [ ! -f "$MASTER_KEY_FILE" ]; then
+    echo "Failed to generate master key."
+    exit 1
+fi
 
-   # Encrypt the master key
-   openssl smime -encrypt -aes-256-cbc -in "$MASTER_KEY_FILE" -out "$ENCRYPTED_KEY_FILE" -outform DER "$SERVER_CERT"
-   if [ $? -ne 0 ]; then
-     echo "Failed to encrypt master key."
-     exit 1
-   fi
-    #openssl smime -encrypt -aes-256-cbc -in master_key.txt -outform DER server_cert.pem | base64 -w 0 > encrypted_key.txt
-   # Convert encrypted key to base64
-   base64 -w 0 "$ENCRYPTED_KEY_FILE" > "$ENCRYPTED_KEY_BASE64_FILE"
-   # Create JSON file for key exchange
-   MASTER_KEY=$(cat "$ENCRYPTED_KEY_BASE64_FILE")
-   ccat <<EOF > "$KEY_EXCHANGE_JSON"
+echo "Master key generated and saved to $MASTER_KEY_FILE"
+
+# Encrypt the master key
+openssl smime -encrypt -aes-256-cbc -in "$MASTER_KEY_FILE" -out "$ENCRYPTED_KEY_FILE" -outform DER "$SERVER_CERT"
+if [ $? -ne 0 ]; then
+    echo "Failed to encrypt master key."
+    exit 1
+fi
+
+# Convert encrypted key to base64
+base64 -w 0 "$ENCRYPTED_KEY_FILE" > "$ENCRYPTED_KEY_BASE64_FILE"
+
+# Create JSON file for key exchange
+MASTER_KEY=$(cat "$ENCRYPTED_KEY_BASE64_FILE")
+cat <<EOF > "$KEY_EXCHANGE_JSON"
 {
     "sessionID": "$SESSION_ID",
     "masterKey": "$MASTER_KEY",
@@ -99,12 +101,17 @@ EOF
 
 echo "Key exchange JSON created at $KEY_EXCHANGE_JSON"
 
+# Send the key exchange request
+curl -s -X POST http://$SERVER_IP:8080/keyexchange \
+     -H "Content-Type: application/json" \
+     -d @"$KEY_EXCHANGE_JSON"
 
+if [ $? -ne 0 ]; then
+    echo "Failed to send Key Exchange request"
+    exit 1
+fi
 
-
-
-
-
+echo "Key Exchange request sent successfully."
 
 
 
