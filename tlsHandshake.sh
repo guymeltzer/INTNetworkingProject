@@ -103,6 +103,7 @@ EOF
 
 echo "Key exchange JSON created at $KEY_EXCHANGE_JSON"
 
+#
 # Send the key exchange request
 curl -s -X POST http://$SERVER_IP:8080/keyexchange \
      -H "Content-Type: application/json" \
@@ -114,6 +115,27 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Key Exchange request sent successfully."
+
+# Parse the JSON response to extract the encrypted sample message
+ENCRYPTED_SAMPLE_MESSAGE=$(echo $KEY_EXCHANGE_RESPONSE | jq -r '.encryptedSampleMessage')
+
+if [ -z "$ENCRYPTED_SAMPLE_MESSAGE" ]; then
+    echo "Failed to parse encrypted sample message from response"
+    exit 1
+fi
+
+# Decode the encrypted sample message from base64
+echo "$ENCRYPTED_SAMPLE_MESSAGE" | base64 -d > decrypted_sample_message.enc
+# Decrypt the encrypted sample message using the master key
+MASTER_KEY=$(cat "$MASTER_KEY_FILE")
+DECRYPTED_MESSAGE=$(openssl enc -d -aes-256-cbc -pbkdf2 -k "$MASTER_KEY" -in decrypted_sample_message.enc)
+# Compare the decrypted message to the original sample message
+if [ "$DECRYPTED_MESSAGE" != "$SAMPLE_MESSAGE" ]; then
+    echo "Server symmetric encryption using the exchanged master-key has failed."
+    exit 6
+else
+    echo "Client-Server TLS handshake has been completed successfully."
+fi
 
 
 
