@@ -76,8 +76,8 @@ if [ ! -f "$MASTER_KEY_FILE" ]; then
     echo "Failed to generate master key."
     exit 1
 fi
-cat "" >> $ENCRYPTED_KEY_FILE
-cat "" >> $ENCRYPTED_KEY_BASE64_FILE
+touch $ENCRYPTED_KEY_FILE
+touch $ENCRYPTED_KEY_BASE64_FILE
 
 echo "Master key generated and saved to $MASTER_KEY_FILE"
 
