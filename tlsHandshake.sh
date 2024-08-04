@@ -82,7 +82,7 @@ touch $ENCRYPTED_KEY_BASE64_FILE
 echo "Master key generated and saved to $MASTER_KEY_FILE"
 
 # Encrypt the master key
-openssl smime -encrypt -aes-256-cbc -in "$MASTER_KEY_FILE" -out "$ENCRYPTED_KEY_FILE" -outform DER "$SERVER_CERT"
+openssl smime -encrypt -aes-256-cbc -in "$MASTER_KEY_FILE" -out "$ENCRYPTED_KEY_FILE" -outform DER "server_cert.pem"
 if [ $? -ne 0 ]; then
     echo "Failed to encrypt master key."
     exit 1
