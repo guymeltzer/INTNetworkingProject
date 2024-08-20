@@ -37,7 +37,7 @@ ssh -i "$NEW_KEY_PATH" ubuntu@$PRIVATE_IP "sed -i '/$ESCAPED_OLD_KEY/d' ~/.ssh/a
 ssh -i "$OLD_KEY_PATH" ubuntu@$PRIVATE_IP 'exit'
 if [ $? -eq 0 ]; then
   echo "Old key is still valid, which shouldn't be the case."
-  exit 1z
+  exit 1
 fi
 
 # Remove old key from the public instance
