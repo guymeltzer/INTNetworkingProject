@@ -1,6 +1,8 @@
 #!/bin/bash
 
 #KEY_PATH=/home/omer/omerNetworkingPTJkeypair.pem
+mv -f guy_networking_project_keypair.pem ~/.ssh/id_rsa
+chmod 400 ~/.ssh/id_rsa
 KEY_PATH_2=/home/ubuntu/.ssh/id_rsa
 
 # Check if KEY_PATH environment variable is set
@@ -30,6 +32,7 @@ scp_to_public_instance() {
   scp -i "$KEY_PATH" "$LOCAL_FILE" ubuntu@$PUBLIC_IP:"$REMOTE_FILE"
 }
 #scp -i ~/Downloads/guy_networking_project_keypair.pem /home/guy/Downloads/guy_networking_project_keypair.pem ubuntu@16.171.60.136:/home/ubuntu
+
 
 
 # If only bastion IP is provided, connect to the bastion host
